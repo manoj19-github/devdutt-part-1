@@ -13,17 +13,20 @@ import { Button } from "./ui/button";
 import AppLogo from "./ui/AppLogo";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+
 import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaUserAlt } from "react-icons/fa";
 import { SignInFlowTypes } from "@/types";
 import { useForm } from "react-hook-form";
 import { loginSchema } from "@/formSchema/authSchema.schema";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import useAppState from "@/stores/useAppState";
 
 type SignInCardProps = {
   setAuthType: React.Dispatch<React.SetStateAction<SignInFlowTypes>>;
 };
 const SignInCard: FC<SignInCardProps> = ({ setAuthType }): JSX.Element => {
+  const appState = useAppState();
   const formControls = useForm<Z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
   });
@@ -106,6 +109,24 @@ const SignInCard: FC<SignInCardProps> = ({ setAuthType }): JSX.Element => {
           >
             Continue with Github
             <FaGithub size={25} />
+          </Button>
+          <Button
+            variant="outline"
+            className="flex relative w-full gap-x-2"
+            onClick={() => {}}
+            disabled={false}
+          >
+            Continue with Test 1 User
+            <FaUserAlt size={25} />
+          </Button>
+          <Button
+            variant="outline"
+            className="flex relative w-full gap-x-2"
+            onClick={() => {}}
+            disabled={false}
+          >
+            Continue with Test 2 User
+            <FaUserAlt size={25} />
           </Button>
         </div>
         <p className="text-sm text-muted-foreground text-center">
