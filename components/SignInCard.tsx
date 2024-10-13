@@ -21,6 +21,8 @@ import { loginSchema } from "@/formSchema/authSchema.schema";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import useAppState from "@/stores/useAppState";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 type SignInCardProps = {
   setAuthType: React.Dispatch<React.SetStateAction<SignInFlowTypes>>;
@@ -43,6 +45,7 @@ const SignInCard: FC<SignInCardProps> = ({
   onPasswordSignIn,
 }): JSX.Element => {
   const appState = useAppState();
+  const router = useRouter();
   const formControls = useForm<Z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
   });
@@ -52,6 +55,7 @@ const SignInCard: FC<SignInCardProps> = ({
     onPasswordSignIn({
       values,
       successCallback: () => {
+        router.push("/main");
         toast.success("Login Successful");
       },
       errorCallback: () => {
@@ -118,10 +122,15 @@ const SignInCard: FC<SignInCardProps> = ({
             <Button
               type="submit"
               disabled={appState.isLoading}
-              className="w-full"
+              className="w-full gap-x-2"
               size="lg"
             >
               Continue
+              {appState.loadingType === "password" ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <></>
+              )}
             </Button>
           </form>
         </Form>
@@ -137,6 +146,11 @@ const SignInCard: FC<SignInCardProps> = ({
             onClick={() => signInFn("google")}
             disabled={appState.isLoading}
           >
+            {appState.loadingType === "google" ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <></>
+            )}
             Continue with Google
             <FcGoogle size={25} />
           </Button>
@@ -146,6 +160,11 @@ const SignInCard: FC<SignInCardProps> = ({
             onClick={() => signInFn("github")}
             disabled={appState.isLoading}
           >
+            {appState.loadingType === "github" ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <></>
+            )}
             Continue with Github
             <FaGithub size={25} />
           </Button>
@@ -155,6 +174,11 @@ const SignInCard: FC<SignInCardProps> = ({
             onClick={() => {}}
             disabled={appState.isLoading}
           >
+            {appState.loadingType === "test1" ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <></>
+            )}
             Continue with Test 1 User
             <FaUserAlt size={25} />
           </Button>
@@ -164,6 +188,11 @@ const SignInCard: FC<SignInCardProps> = ({
             onClick={() => {}}
             disabled={appState.isLoading}
           >
+            {appState.loadingType === "test2" ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <></>
+            )}
             Continue with Test 2 User
             <FaUserAlt size={25} />
           </Button>

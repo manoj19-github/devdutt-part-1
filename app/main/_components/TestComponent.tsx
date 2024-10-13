@@ -1,4 +1,5 @@
 "use client";
+import UserButton from "@/components/features/auth/UserButton";
 import { Button } from "@/components/ui/button";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useRouter } from "next/navigation";
@@ -11,20 +12,7 @@ const TestComponent: FC<TestComponentProps> = (): JSX.Element => {
 
   return (
     <div>
-      TestComponent
-      <Button
-        onClick={() => {
-          signOut();
-          router.refresh();
-          setTimeout(() => {
-            signOut();
-            router.refresh();
-            router.push("/signin");
-          }, 1000);
-        }}
-      >
-        Logout
-      </Button>
+      <UserButton />
     </div>
   );
 };
