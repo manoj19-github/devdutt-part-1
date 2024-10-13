@@ -13,7 +13,6 @@ import { Button } from "./ui/button";
 import AppLogo from "./ui/AppLogo";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaUserAlt } from "react-icons/fa";
 import { SignInFlowTypes } from "@/types";
@@ -21,17 +20,48 @@ import { useForm } from "react-hook-form";
 import { loginSchema } from "@/formSchema/authSchema.schema";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import useAppState from "@/stores/useAppState";
+import toast from "react-hot-toast";
 
 type SignInCardProps = {
   setAuthType: React.Dispatch<React.SetStateAction<SignInFlowTypes>>;
+  signInFn: any;
+  onPasswordSignIn: ({
+    successCallback,
+    finallyCallback,
+    errorCallback,
+    values,
+  }: {
+    successCallback?: (args?: any) => void;
+    errorCallback?: (args?: any) => void;
+    finallyCallback?: (args?: any) => void;
+    values: Z.infer<typeof loginSchema>;
+  }) => void;
 };
-const SignInCard: FC<SignInCardProps> = ({ setAuthType }): JSX.Element => {
+const SignInCard: FC<SignInCardProps> = ({
+  setAuthType,
+  signInFn,
+  onPasswordSignIn,
+}): JSX.Element => {
   const appState = useAppState();
   const formControls = useForm<Z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmitHandler = (values: Z.infer<typeof loginSchema>) => {};
+  const onSubmitHandler = (values: Z.infer<typeof loginSchema>) => {
+    appState.setIsLoading(true);
+    onPasswordSignIn({
+      values,
+      successCallback: () => {
+        toast.success("Login Successful");
+      },
+      errorCallback: () => {
+        toast.error("Login Failed");
+      },
+      finallyCallback: () => {
+        appState.setIsLoading(false);
+      },
+    });
+  };
   return (
     <Card className="w-full h-full p-6">
       <div className="flex items-center w-full  justify-center">
@@ -57,7 +87,11 @@ const SignInCard: FC<SignInCardProps> = ({ setAuthType }): JSX.Element => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input disabled={false} placeholder="Email" {...field} />
+                    <Input
+                      disabled={appState.isLoading}
+                      placeholder="Email"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -70,7 +104,7 @@ const SignInCard: FC<SignInCardProps> = ({ setAuthType }): JSX.Element => {
                 <FormItem>
                   <FormControl>
                     <Input
-                      disabled={false}
+                      disabled={appState.isLoading}
                       type="password"
                       placeholder="Password"
                       {...field}
@@ -81,7 +115,12 @@ const SignInCard: FC<SignInCardProps> = ({ setAuthType }): JSX.Element => {
               )}
             />
 
-            <Button type="submit" disabled={false} className="w-full" size="lg">
+            <Button
+              type="submit"
+              disabled={appState.isLoading}
+              className="w-full"
+              size="lg"
+            >
               Continue
             </Button>
           </form>
@@ -91,39 +130,39 @@ const SignInCard: FC<SignInCardProps> = ({ setAuthType }): JSX.Element => {
           <p className="px-1">OR</p>
           <div className="w-full bg-gray-200 h-[1px]"></div>
         </div>
-        <div className="flex flex-col space-y-4">
+        <div className="grid grid-cols-2 gap-3">
           <Button
             variant="outline"
-            className="flex relative w-full gap-x-2"
-            onClick={() => {}}
-            disabled={false}
+            className="flex relative w-full gap-x-2 col-span-1"
+            onClick={() => signInFn("google")}
+            disabled={appState.isLoading}
           >
             Continue with Google
             <FcGoogle size={25} />
           </Button>
           <Button
             variant="outline"
-            className="flex relative w-full gap-x-2"
-            onClick={() => {}}
-            disabled={false}
+            className="flex relative w-full gap-x-2 col-span-1"
+            onClick={() => signInFn("github")}
+            disabled={appState.isLoading}
           >
             Continue with Github
             <FaGithub size={25} />
           </Button>
           <Button
             variant="outline"
-            className="flex relative w-full gap-x-2"
+            className="flex relative w-full gap-x-2 col-span-1"
             onClick={() => {}}
-            disabled={false}
+            disabled={appState.isLoading}
           >
             Continue with Test 1 User
             <FaUserAlt size={25} />
           </Button>
           <Button
             variant="outline"
-            className="flex relative w-full gap-x-2"
+            className="flex relative w-full gap-x-2 col-span-1"
             onClick={() => {}}
-            disabled={false}
+            disabled={appState.isLoading}
           >
             Continue with Test 2 User
             <FaUserAlt size={25} />

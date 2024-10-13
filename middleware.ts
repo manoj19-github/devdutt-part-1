@@ -1,27 +1,26 @@
 import {
   convexAuthNextjsMiddleware,
   createRouteMatcher,
+  isAuthenticatedNextjs,
   nextjsMiddlewareRedirect,
 } from "@convex-dev/auth/nextjs/server";
-
 const isSignInPage = createRouteMatcher(["/signin", "/signup"]);
-const isProtectedRoute = createRouteMatcher(["/main/*"]);
+const isProtectedRoute = createRouteMatcher(["/main"]);
 const isLandingPage = createRouteMatcher(["/"]);
 
-export default convexAuthNextjsMiddleware((request, { convexAuth }) => {
-  console.log(
-    "convexAuth.isAuthenticated() >>>>>>>>>>>>>>> ",
-    convexAuth.isAuthenticated()
-  );
-  console.log("isLandingPage(request) >>>>>>>>>>>> ", isLandingPage(request));
-  if (isSignInPage(request) && convexAuth.isAuthenticated())
+export default convexAuthNextjsMiddleware((request) => {
+  if (isSignInPage(request) && isAuthenticatedNextjs())
     return nextjsMiddlewareRedirect(request, "/main");
-  if (isProtectedRoute(request) && !convexAuth.isAuthenticated())
-    return nextjsMiddlewareRedirect(request, "/signin");
-  if (isLandingPage(request)) {
-    if (!convexAuth.isAuthenticated())
+  if (isProtectedRoute(request) || request.nextUrl.pathname.includes("main")) {
+    if (!isAuthenticatedNextjs()) {
       return nextjsMiddlewareRedirect(request, "/signin");
-    return nextjsMiddlewareRedirect(request, "/main");
+    }
+  }
+
+  if (isLandingPage(request)) {
+    if (!isAuthenticatedNextjs()) {
+      return nextjsMiddlewareRedirect(request, "/signin");
+    } else return nextjsMiddlewareRedirect(request, "/main");
   }
 });
 
