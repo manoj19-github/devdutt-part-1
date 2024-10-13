@@ -1,5 +1,5 @@
-import AuthScreen from "@/components/features/auth/AuthScreen";
 import React, { FC } from "react";
+import AuthScreen from "../_components/AuthScreen";
 
 type SigninPageProps = {};
 const SigninPage: FC<SigninPageProps> = (): JSX.Element => {

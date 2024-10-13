@@ -1,28 +1,35 @@
 "use client";
 import React, { FC } from "react";
 import Z from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub, FaUserAlt } from "react-icons/fa";
+import { SignInFlowTypes } from "@/types";
+import { Form, useForm } from "react-hook-form";
+import { loginSchema } from "@/formSchema/authSchema.schema";
+
+import useAppState from "@/stores/useAppState";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import AppLogo from "./ui/AppLogo";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub, FaUserAlt } from "react-icons/fa";
-import { SignInFlowTypes } from "@/types";
-import { useForm } from "react-hook-form";
-import { loginSchema } from "@/formSchema/authSchema.schema";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
-import useAppState from "@/stores/useAppState";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+} from "@/components/ui/card";
+import AppLogo from "@/components/ui/AppLogo";
+import { Button } from "@/components/ui/button";
+import {
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 type SignInCardProps = {
   setAuthType: React.Dispatch<React.SetStateAction<SignInFlowTypes>>;

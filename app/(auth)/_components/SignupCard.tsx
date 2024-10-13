@@ -6,18 +6,24 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Input } from "./ui/input";
+} from "../../../components/ui/card";
+import { Input } from "../../../components/ui/input";
 import { Loader2 } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../../../components/ui/button";
 import Z from "zod";
-import AppLogo from "./ui/AppLogo";
+import AppLogo from "../../../components/ui/AppLogo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaUserAlt } from "react-icons/fa";
 import { SignInFlowTypes } from "@/types";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "../../../components/ui/form";
 import { loginSchema, registerSchema } from "@/formSchema/authSchema.schema";
 import { signIn } from "@/convex/auth";
 import useAppState from "@/stores/useAppState";

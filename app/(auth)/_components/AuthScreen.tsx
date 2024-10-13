@@ -1,7 +1,5 @@
 "use client";
 
-import SignInCard from "@/components/SignInCard";
-import SignupCard from "@/components/SignupCard";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { SignInFlowTypes } from "@/types";
 import React, { FC, useState } from "react";
@@ -9,6 +7,8 @@ import Z from "zod";
 import { loginSchema, registerSchema } from "@/formSchema/authSchema.schema";
 import toast from "react-hot-toast";
 import useAppState from "@/stores/useAppState";
+import SignInCard from "./SignInCard";
+import SignupCard from "./SignupCard";
 type AuthScreenProps = {};
 const AuthScreen: FC<AuthScreenProps> = () => {
   const { signIn } = useAuthActions();

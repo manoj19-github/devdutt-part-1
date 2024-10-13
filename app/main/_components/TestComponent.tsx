@@ -1,5 +1,5 @@
 "use client";
-import UserButton from "@/components/features/auth/UserButton";
+import UserButton from "@/app/(auth)/_components/UserButton";
 import { Button } from "@/components/ui/button";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useRouter } from "next/navigation";
