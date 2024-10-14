@@ -24,8 +24,8 @@ import {
   FormItem,
   FormMessage,
 } from "../../../components/ui/form";
-import { loginSchema, registerSchema } from "@/formSchema/authSchema.schema";
-import { signIn } from "@/convex/auth";
+import { registerSchema } from "@/formSchema/authSchema.schema";
+
 import useAppState from "@/stores/useAppState";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";

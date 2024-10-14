@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaUserAlt } from "react-icons/fa";
 import { SignInFlowTypes } from "@/types";
-import { Form, useForm } from "react-hook-form";
 import { loginSchema } from "@/formSchema/authSchema.schema";
 
 import useAppState from "@/stores/useAppState";
@@ -24,11 +23,13 @@ import {
 import AppLogo from "@/components/ui/AppLogo";
 import { Button } from "@/components/ui/button";
 import {
+  Form,
   FormField,
   FormItem,
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 
 type SignInCardProps = {

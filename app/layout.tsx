@@ -35,8 +35,10 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <ModalContainer />
-          <ProviderContainer>{children}</ProviderContainer>
+          <ProviderContainer>
+            <ModalContainer />
+            {children}
+          </ProviderContainer>
         </body>
       </html>
     </ConvexAuthNextjsServerProvider>
