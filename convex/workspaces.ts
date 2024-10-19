@@ -51,3 +51,41 @@ export const getWorkspacesByName = query({
       .first();
   },
 });
+
+
+export const getWorkspacesByJoinCode = query({
+  args: {
+    joinCode: v.string(),
+  },
+  async handler(ctx, args) {
+    return await ctx.db
+      .query("workspaces")
+      .filter((q) => q.eq(q.field("joinCode"), args.joinCode))
+      .first();
+  },
+});
+
+export const getWorkspacesByUserId = query({
+  args: {
+    userId: v.string(),
+  },
+  async handler(ctx, args) {
+    return await ctx.db
+      .query("workspaces")
+      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .collect();
+  },
+});
+
+export const getWorkSpaceById = query({
+  args: {
+    id: v.id("workspaces"),
+  },
+  async handler(ctx, args) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not logged in");
+    }
+    return await ctx.db.get(args.id);
+  },
+});

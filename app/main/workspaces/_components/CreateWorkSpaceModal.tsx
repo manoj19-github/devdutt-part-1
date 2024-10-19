@@ -1,6 +1,6 @@
 "use client";
 import Z from "zod";
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -27,12 +27,15 @@ import { CreateWorkSpaceSchema } from "@/formSchema/workSpace.schema";
 import useAppState from "@/stores/useAppState";
 import { Button } from "@/components/ui/button";
 import useCreateWorkSpace from "@/hooks/useCreateWorkSpace";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 type CreateWorkSpaceModalProps = {};
 const CreateWorkSpaceModal: FC<CreateWorkSpaceModalProps> = (): JSX.Element => {
   const [workSpaceModalIsOpen, setWorkSpaceModalIsOpen] = useWorkSpaceModal();
   const { mutate, isPending } = useCreateWorkSpace();
   const appState = useAppState();
+  const router = useRouter();
   const formControls = useForm<Z.infer<typeof CreateWorkSpaceSchema>>({
     resolver: zodResolver(CreateWorkSpaceSchema),
   });
@@ -41,13 +44,20 @@ const CreateWorkSpaceModal: FC<CreateWorkSpaceModalProps> = (): JSX.Element => {
   ) => {
     const data = await mutate(values, {
       onError() {},
-      onSuccess(data) {
+      onSuccess(workspaceId) {
         console.log("success data >>>>>>> ", data);
         setWorkSpaceModalIsOpen(false);
+        toast.success("Workspace created successfully");
+        router.push(`/main/workspaces/${workspaceId}`);
       },
     });
   };
   console.log("formControls ", formControls.formState.errors);
+  useEffect(() => {
+    if (!workSpaceModalIsOpen) {
+      formControls.reset();
+    }
+  }, [workSpaceModalIsOpen]);
   return (
     <Dialog
       open={workSpaceModalIsOpen}
