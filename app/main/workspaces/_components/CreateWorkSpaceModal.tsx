@@ -29,11 +29,14 @@ import { Button } from "@/components/ui/button";
 import useCreateWorkSpace from "@/hooks/useCreateWorkSpace";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import useIsMounted from "@/hooks/useIsMounted";
 
 type CreateWorkSpaceModalProps = {};
 const CreateWorkSpaceModal: FC<CreateWorkSpaceModalProps> = (): JSX.Element => {
   const [workSpaceModalIsOpen, setWorkSpaceModalIsOpen] = useWorkSpaceModal();
-  const { mutate, isPending } = useCreateWorkSpace();
+  const { mutate, isPending, error } = useCreateWorkSpace();
+  console.log("error: ", error);
+  const isMounted = useIsMounted();
   const appState = useAppState();
   const router = useRouter();
   const formControls = useForm<Z.infer<typeof CreateWorkSpaceSchema>>({
@@ -45,7 +48,6 @@ const CreateWorkSpaceModal: FC<CreateWorkSpaceModalProps> = (): JSX.Element => {
     const data = await mutate(values, {
       onError() {},
       onSuccess(workspaceId) {
-        console.log("success data >>>>>>> ", data);
         setWorkSpaceModalIsOpen(false);
         toast.success("Workspace created successfully");
         router.push(`/main/workspaces/${workspaceId}`);
@@ -58,6 +60,7 @@ const CreateWorkSpaceModal: FC<CreateWorkSpaceModalProps> = (): JSX.Element => {
       formControls.reset();
     }
   }, [workSpaceModalIsOpen]);
+  if (!isMounted) return <></>;
   return (
     <Dialog
       open={workSpaceModalIsOpen}

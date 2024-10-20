@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useGetWorkSpaceById } from "@/hooks/useGetWorkSpace";
+import useIsMounted from "@/hooks/useIsMounted";
 import { useWorkspaceId } from "@/hooks/useWorkspaceId";
 import { Info, Search } from "lucide-react";
 import React, { FC } from "react";
@@ -9,6 +10,8 @@ type ToolbarProps = {};
 const Toolbar: FC<ToolbarProps> = (): JSX.Element => {
   const workspace = useWorkspaceId();
   const { data } = useGetWorkSpaceById({ id: workspace });
+  const isMounted = useIsMounted();
+  if (!isMounted) return <></>;
   return (
     <div className="bg-appColor flex items-center justify-between h-10 p-1.5">
       <div className="flex-1" />

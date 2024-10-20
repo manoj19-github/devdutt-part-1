@@ -1,6 +1,8 @@
 "use client";
 
-import { useWorkSpaces } from "@/hooks/useGetWorkSpaces";
+
+import { useGetWorkSpaces } from "@/hooks/useGetWorkSpaces";
+import useIsMounted from "@/hooks/useIsMounted";
 import { useWorkSpaceModal } from "@/hooks/useWorkSpaceModal";
 import { useRouter } from "next/navigation";
 import React, { FC, useEffect, useMemo } from "react";
@@ -8,7 +10,7 @@ import React, { FC, useEffect, useMemo } from "react";
 
 type MainPageProps = {};
 const MainPage: FC<MainPageProps> = (): JSX.Element => {
-  const { data, isLoading } = useWorkSpaces();
+  const { data, isLoading } = useGetWorkSpaces();
   const router = useRouter();
 
   const [workSpaceModalIsOpen, setWorkSpaceModalIsOpen] = useWorkSpaceModal();
@@ -23,6 +25,8 @@ const MainPage: FC<MainPageProps> = (): JSX.Element => {
       setWorkSpaceModalIsOpen(true);
     }
   }, [workSpaceId, isLoading, workSpaceModalIsOpen, setWorkSpaceModalIsOpen]);
+  const isMounted = useIsMounted();
+  if (!isMounted) return <div>Loading...</div>;
 
   return <div>{/* <TestComponent /> */}</div>;
 };

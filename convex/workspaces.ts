@@ -9,10 +9,22 @@ export const createWorkspace = mutation({
   async handler(ctx, args) {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not logged in");
+      return {
+        isLogout: true,
+        data: null,
+      };
     }
     // Todo: create a proper method later
-    const joinCode = Math.random().toString(36).substring(2, 8);
+    const generateCode = (): string => {
+      return Array.from(
+        { length: 6 },
+        () =>
+          "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"[
+            Math.floor(Math.random() * 36)
+          ]
+      ).join("");
+    };
+    // const joinCode = Math.random().toString(36).substring(2, 8);
     const existingWorkSpaces = await ctx.db
       .query("workspaces")
       .filter((q) => q.eq(q.field("name"), args.name))
@@ -20,15 +32,27 @@ export const createWorkspace = mutation({
     if (!!existingWorkSpaces) {
       await ctx.db.patch(existingWorkSpaces._id, {
         name: args.name,
-        joinCode: joinCode,
+        joinCode: generateCode(),
       });
-      return existingWorkSpaces._id;
+      return {
+        data: existingWorkSpaces._id,
+        isLogout: false,
+      };
     } else {
-      return await ctx.db.insert("workspaces", {
+      const newWorkSpaceData = await ctx.db.insert("workspaces", {
         name: args.name,
-        joinCode: joinCode,
+        joinCode: generateCode(),
         userId,
       });
+      await ctx.db.insert("members", {
+        userId,
+        workspaceId: newWorkSpaceData,
+        role: "admin",
+      });
+      return {
+        data: newWorkSpaceData,
+        isLogout: false,
+      };
     }
   },
 });
@@ -36,7 +60,24 @@ export const createWorkspace = mutation({
 export const getWorkspaces = query({
   args: {},
   async handler(ctx) {
-    return await ctx.db.query("workspaces").collect();
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+    const members = await ctx.db
+      .query("members")
+      .withIndex("by_user_id", (q) => q.eq("userId", userId))
+      .collect();
+    const workspaceIds = members.map((member) => member.workspaceId);
+    const workspaces = [];
+    for await (const _workspaceId of workspaceIds) {
+      const _workspace = await ctx.db.get(_workspaceId);
+      if (!!_workspace) {
+        workspaces.push(_workspace);
+      }
+    }
+
+    return workspaces;
   },
 });
 
@@ -51,7 +92,6 @@ export const getWorkspacesByName = query({
       .first();
   },
 });
-
 
 export const getWorkspacesByJoinCode = query({
   args: {
@@ -83,9 +123,29 @@ export const getWorkSpaceById = query({
   },
   async handler(ctx, args) {
     const userId = await getAuthUserId(ctx);
+
     if (!userId) {
-      throw new Error("Not logged in");
+      return {
+        data: null,
+        isLogout: true,
+      };
     }
-    return await ctx.db.get(args.id);
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.id).eq("userId", userId)
+      )
+      .unique();
+    if (!member) {
+      return {
+        data: null,
+        isLogout: false,
+      };
+    }
+    const data = await ctx.db.get(args.id);
+    return {
+      data,
+      isLogout: false,
+    };
   },
 });

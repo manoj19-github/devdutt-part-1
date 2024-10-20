@@ -1,6 +1,7 @@
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { APISTATUSENUM } from "@/types";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { useMutation } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 
@@ -14,6 +15,7 @@ type Options = {
 };
 
 const useCreateWorkSpace = (options?: Options) => {
+  const { signOut } = useAuthActions();
   const [data, setData] = useState<ResponseType>();
   const [apiStatus, setAPIStatus] = useState<APISTATUSENUM>(APISTATUSENUM.INIT);
   const [settled, setSettled] = useState<boolean>(false);
@@ -37,15 +39,32 @@ const useCreateWorkSpace = (options?: Options) => {
         setSettled(false);
         setError(undefined);
         const result = await mutation(values);
-        options?.onSuccess?.(result);
-        setData(result);
-        setAPIStatus(APISTATUSENUM.SUCCESS);
-        return result;
+        console.log("result: ", result);
+        if (!result || (!!result.isLogout && !result?.data)) {
+          signOut();
+          options?.onSetteled?.();
+          setSettled(true);
+          return null;
+        }
+        if (!!result && result?.data && !result.isLogout) {
+          options?.onSuccess?.(result?.data);
+          setData(result?.data);
+          setAPIStatus(APISTATUSENUM.SUCCESS);
+          options?.onSetteled?.();
+          setSettled(true);
+          return result.data;
+        }
+        options?.onSetteled?.();
+        setSettled(true);
+        return result?.data;
       } catch (error: any) {
         setAPIStatus(APISTATUSENUM.ERROR);
         setError(error);
         options?.onError?.(error as Error);
-        if (options?.throwError) throw error;
+        options?.onSetteled?.();
+        setSettled(true);
+        return null;
+        // if (options?.throwError) throw error;
       } finally {
         options?.onSetteled?.();
         setSettled(true);
