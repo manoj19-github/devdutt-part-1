@@ -32,8 +32,8 @@ const WorkSpaceSidebar: FC<WorkSpaceSidebarProps> = () => {
     );
 
   return (
-    <div className="flex flex-col gap-y-2 bg-appColor h-full">
-      <WorkSpaceHeader workspace={workSpaceByIdResponse?.data}/>
+    <div className="flex flex-col gap-y-2 bg-appColor/20 h-full">
+      <WorkSpaceHeader workspace={workSpaceByIdResponse?.data} isAdmin={memberResponse?.data && memberResponse.data?.role==="admin"}/>
 
     </div>
   );
