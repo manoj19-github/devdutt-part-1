@@ -6,6 +6,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import WorkSpaceSidebar from "../_components/WorkSpaceSidebar";
 
 type WorkspaceIdLayoutProps = {
   children: ReactNode;
@@ -16,12 +17,12 @@ const WorkSpaceIdLayout: FC<WorkspaceIdLayoutProps> = ({ children }) => {
       <Toolbar />
       <div className="flex h-[calc(100vh-40px)]">
         <Sidebar />
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel>
-            <div>Channels sidebar</div>
+        <ResizablePanelGroup direction="horizontal" autoSaveId="ca-worspace-layout">
+          <ResizablePanel defaultSize={20} minSize={11} className="bg-appColor">
+            <WorkSpaceSidebar/>
           </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel minSize={20}>
             <div>{children}</div>
           </ResizablePanel>
         </ResizablePanelGroup>

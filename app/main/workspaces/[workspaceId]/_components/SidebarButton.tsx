@@ -23,9 +23,9 @@ const SidebarButton: FC<SidebarButtonProps> = ({
           isActive && "bg-accent/20"
         )}
       >
-        <Icon className="size-8 text-white group-hover:scale-110 transition-all  " />
+        <Icon className="size-6 text-white group-hover:scale-110 transition-all  " />
       </Button>
-      <span className="text-[14px] text-white group-hover:text-accent ">
+      <span className="text-[12px] text-white group-hover:text-accent ">
         {label}
       </span>
     </div>

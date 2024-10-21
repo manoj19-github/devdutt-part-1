@@ -35,7 +35,7 @@ const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="btn btn-ghost btn-sm" asChild>
-        <Button className="size-9 relative overflow-hidden bg-[#ababab] hover:bg-[#ababab]/80 text-slate-700 font-semibold text-xl">
+        <Button className="size-7 relative overflow-hidden bg-[#ababab] hover:bg-[#ababab]/80 text-slate-700 font-semibold text-lg">
           {workspaceByIdLoading ? (
             <Loader className="siz-5 animate-spin shrink-0" />
           ) : (
