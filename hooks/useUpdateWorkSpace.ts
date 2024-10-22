@@ -14,13 +14,13 @@ type Options = {
   throwError?: boolean;
 };
 
-const useCreateWorkSpace = (options?: Options) => {
+const useUpdateWorkspace = (options?: Options) => {
   const { signOut } = useAuthActions();
   const [data, setData] = useState<ResponseType>();
   const [apiStatus, setAPIStatus] = useState<APISTATUSENUM>(APISTATUSENUM.INIT);
   const [settled, setSettled] = useState<boolean>(false);
   const [error, setError] = useState<any>();
-  const mutation = useMutation(api.workspaces.createWorkspace);
+  const mutation = useMutation(api.workspaces.updateWorkspace);
   const isPending = useMemo(
     () => apiStatus === APISTATUSENUM.PENDING,
     [apiStatus]
@@ -84,4 +84,4 @@ const useCreateWorkSpace = (options?: Options) => {
   };
 };
 
-export default useCreateWorkSpace;
+export default useUpdateWorkspace;

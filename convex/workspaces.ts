@@ -149,3 +149,80 @@ export const getWorkSpaceById = query({
     };
   },
 });
+
+export const updateWorkspace = mutation({
+  args: {
+    id: v.id("workspaces"),
+    name: v.string(),
+  },
+  async handler(ctx, args) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return {
+        data: null,
+        isLogout: true,
+      };
+    }
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.id).eq("userId", userId)
+      )
+      .unique();
+    if (!member) {
+      return {
+        data: null,
+        isLogout: false,
+      };
+    }
+    await ctx.db.patch(args.id, {
+      name: args.name,
+    });
+    return {
+      data: args.id,
+      isLogout: false,
+    };
+  },
+});
+
+export const deleteWorkspace = mutation({
+  args: {
+    id: v.id("workspaces"),
+  },
+  async handler(ctx, args) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return {
+        data: null,
+        isLogout: true,
+      };
+    }
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.id).eq("userId", userId)
+      )
+      .unique();
+    if (!member) {
+      return {
+        data: null,
+        isLogout: false,
+      };
+    }
+    const members = await ctx.db
+      .query("members")
+      .filter((q) => q.eq(q.field("workspaceId"), args.id))
+      .collect();
+    for await (const _member of members) {
+      await ctx.db.delete(_member._id);
+    }
+
+    await ctx.db.delete(args.id);
+    return {
+      data: args.id,
+      isLogout: false,
+    };
+  },
+});
+
+
