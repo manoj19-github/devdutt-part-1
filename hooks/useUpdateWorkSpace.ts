@@ -2,6 +2,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { APISTATUSENUM } from "@/types";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { log } from "console";
 import { useMutation } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 
@@ -39,7 +40,7 @@ const useUpdateWorkspace = (options?: Options) => {
         setSettled(false);
         setError(undefined);
         const result = await mutation(values);
-        console.log("result: ", result);
+        console.log("result:42 >>>>>>>>>>>>>>>>>>>>>>> 42 ", result);
         if (!result || (!!result.isLogout && !result?.data)) {
           signOut();
           options?.onSetteled?.();
@@ -47,6 +48,9 @@ const useUpdateWorkspace = (options?: Options) => {
           return null;
         }
         if (!!result && result?.data && !result.isLogout) {
+          console.log("====================================");
+          console.log("hit");
+          console.log("====================================");
           options?.onSuccess?.(result?.data);
           setData(result?.data);
           setAPIStatus(APISTATUSENUM.SUCCESS);

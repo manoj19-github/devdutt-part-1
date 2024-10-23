@@ -1,20 +1,21 @@
 "use client";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState, FormEvent } from "react";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
-  DialogClose,
-  DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog";
 import { Pencil, TrashIcon } from "lucide-react";
 import Hint from "@/components/ui/Hint";
 import useUpdateWorkspace from "@/hooks/useUpdateWorkSpace";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import useIsMounted from "@/hooks/useIsMounted";
+import toast from "react-hot-toast";
+import { useWorkspaceId } from "@/hooks/useWorkspaceId";
+import { useRouter } from "next/navigation";
+import useDeleteWorkspace from "@/hooks/useDeleteWorkSpace";
 type PreferencesModalProps = {
   isOpen: boolean;
   setOpen: (_open: boolean) => void;
@@ -25,20 +26,58 @@ const PreferencesModal: FC<PreferencesModalProps> = ({
   setOpen,
   initialValues,
 }): JSX.Element => {
+  const workspaceId = useWorkspaceId();
+  const router = useRouter();
   const [value, setValue] = useState(initialValues);
   const [modalState, setModalState] = useState<"edit" | "delete" | "init">(
     "init"
   );
-  const { mutate: updateWorkspaceMutate, ispending: updateWorkspacePending } =
+  const { mutate: updateWorkspaceMutate, isPending: updateWorkspacePending } =
     useUpdateWorkspace();
-  const { mutate: deleteWorkspaceMutate, ispending: deleteWorkspacePending } =
-    useUpdateWorkspace();
+  const { mutate: deleteWorkspaceMutate, isPending: deleteWorkspacePending } =
+    useDeleteWorkspace();
   const isMounted = useIsMounted();
   useEffect(() => {
     if (!isOpen) {
       setModalState("init");
+      setValue(initialValues);
     }
   }, [isOpen]);
+  const updateSubmitHandler = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!value || value.trim().length === 0)
+      return toast.error("Workspace name cannot be empty");
+    updateWorkspaceMutate(
+      {
+        id: workspaceId,
+        name: value,
+      },
+      {
+        onSuccess: (data: any) => {
+          console.log("data:40 in preference modal  ", data);
+          setOpen(false);
+
+          toast.success("Workspace updated successfully");
+        },
+      }
+    );
+  };
+  const deleteSubmitHandler = () => {
+    deleteWorkspaceMutate(
+      {
+        id: workspaceId,
+      },
+      {
+        onSuccess: (data: any) => {
+          console.log("data:40 in preference modal  ", data);
+          setOpen(false);
+          router.replace("/main");
+
+          toast.success("Workspace deleted successfully");
+        },
+      }
+    );
+  };
   if (!isMounted) return <></>;
   return (
     <Dialog
@@ -90,7 +129,7 @@ const PreferencesModal: FC<PreferencesModalProps> = ({
               Rename this workspace
             </DialogTitle>
           </DialogHeader>
-          <form className="space-y-4 p-3" onSubmit={() => {}}>
+          <form className="space-y-4 p-3" onSubmit={updateSubmitHandler}>
             <Input
               value={value}
               onChange={(event) => setValue(event.target.value)}
@@ -134,21 +173,21 @@ const PreferencesModal: FC<PreferencesModalProps> = ({
               <div className="flex items-center justify-center"></div>
             </div>
           </div>
-          <div className="flex mb-4 flex-row gap-x-2 justify-between mx-2 items-center">
+          <div className="flex mb-4 flex-col gap-y-4 justify-between mx-2 items-center">
             <p className=" font-semibold text-[16px]">
               If you delete this you can&apos;t revert this
             </p>
             <div className="flex justify-end gap-x-2 items-center">
               <Button
-                disabled={updateWorkspacePending}
+                disabled={deleteWorkspacePending}
                 onClick={() => setModalState("init")}
                 variant="outline"
               >
                 Cancel
               </Button>
               <Button
-                disabled={updateWorkspacePending}
-                onClick={() => setModalState("init")}
+                disabled={deleteWorkspacePending}
+                onClick={deleteSubmitHandler}
                 variant="outline"
               >
                 Yes delete, it
