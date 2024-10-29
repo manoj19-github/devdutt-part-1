@@ -9,6 +9,11 @@ const schema = defineSchema({
     userId: v.id("users"),
     joinCode: v.string(),
   }),
+  channels: defineTable({
+    name: v.string(),
+    workspaceId: v.id("workspaces"),
+  }).index("by_workspace_id", ["workspaceId"]),
+
   members: defineTable({
     userId: v.id("users"),
     workspaceId: v.id("workspaces"),

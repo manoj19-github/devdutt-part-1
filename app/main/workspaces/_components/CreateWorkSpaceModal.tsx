@@ -45,8 +45,12 @@ const CreateWorkSpaceModal: FC<CreateWorkSpaceModalProps> = (): JSX.Element => {
   const onSubmitHandler = async (
     values: Z.infer<typeof CreateWorkSpaceSchema>
   ) => {
+    appState.setIsLoading(true);
     const data = await mutate(values, {
       onError() {},
+      onSetteled() {
+        appState.setIsLoading(false);
+      },
       onSuccess(workspaceId) {
         setWorkSpaceModalIsOpen(false);
         toast.success("Workspace created successfully");
