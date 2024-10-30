@@ -230,3 +230,63 @@ export const deleteWorkspace = mutation({
 });
 
 
+
+export const newJoinCode = mutation({
+  args: {
+    workspaceId: v.id("workspaces"),
+  },
+  async handler(ctx, args) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return {
+        data: null,
+        isLogout: true,
+      };
+    }
+    const generateCode = (): string => {
+      return Array.from(
+        { length: 6 },
+        () =>
+          "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"[
+            Math.floor(Math.random() * 36)
+          ]
+      ).join("");
+    };
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("userId", userId)
+      )
+      .unique();
+    if (!member || member.role !== "admin") {
+      return {
+        data: null,
+        isLogout: false,
+      };
+    }
+    const joinCode = generateCode();
+    await ctx.db.patch(args.workspaceId, {
+      joinCode,
+    });
+    return {
+      data: args.workspaceId,
+      isLogout: false,
+    };
+  },
+});
+
+export const joinWorkspace = mutation({
+  args: {
+    workspaceId: v.id("workspaces"),
+    joinCode: v.string(),
+  },
+  async handler(ctx, args) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return {
+        data: null,
+        isLogout: true,
+      };
+    }
+  },
+});
