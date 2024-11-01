@@ -59,7 +59,7 @@ const UserItem: FC<UserItemProps> = ({
                     src={image}
                     alt={label}
                   />
-                  <AvatarFallback className="rounded-md bg-sky-500 text-white text-lg p-1 ">
+                  <AvatarFallback className="rounded-md bg-sky-500 text-white text-lg p-3 ">
                     {avatarFallback}
                   </AvatarFallback>
                 </Avatar>

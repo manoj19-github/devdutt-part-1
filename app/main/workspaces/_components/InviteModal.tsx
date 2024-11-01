@@ -34,7 +34,7 @@ const InviteModal: FC<InviteModalProps> = ({
   const workspaceId = useWorkspaceId();
   const { mutate, isPending } = useNewJoinCode();
   const copyToClipboard = () => {
-    const inviteLink = `${window.location.origin}/join/${workspaceId}`;
+    const inviteLink = `${window.location.origin}/main/join/${workspaceId}`;
     window.navigator.clipboard.writeText(inviteLink).then(() => {
       toast.success("Copied to clipboard");
     });

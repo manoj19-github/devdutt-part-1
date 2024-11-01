@@ -60,7 +60,14 @@ const WorkspaceSection: FC<WorkspaceSectionProps> = ({
           </Hint>
         )}
       </div>
-      <div className={cn("mt-2", className)}>{toggle && children}</div>
+      <div
+        className={cn(
+          "mt-2 flex flex-col gap-y-3  items-start justify-start",
+          className
+        )}
+      >
+        {toggle && children}
+      </div>
     </div>
   );
 };

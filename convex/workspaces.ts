@@ -288,5 +288,67 @@ export const joinWorkspace = mutation({
         isLogout: true,
       };
     }
+    const workspace = await ctx.db.get(args.workspaceId);
+    if (!workspace) {
+      return {
+        data: null,
+        isLogout: false,
+      };
+    }
+    if (workspace.joinCode.toLowerCase() !== args.joinCode.toLowerCase())
+      return {
+        data: null,
+        isNotSameWorkspaceJoinCode: true,
+      };
+
+    const existingMember = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("userId", userId)
+      )
+      .unique();
+    if (existingMember)
+      return {
+        data: args.workspaceId,
+        alreadyJoined: true,
+      };
+    await ctx.db.insert("members", {
+      workspaceId: workspace._id,
+      userId,
+      role: "member",
+    });
+    return {
+      data: args.workspaceId,
+      isLogout: false,
+    };
+  },
+});
+
+export const getInfoOfWorkspaceById = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+  },
+  async handler(ctx, args) {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return {
+        data: null,
+        isLogout: true,
+      };
+    }
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.workspaceId).eq("userId", userId)
+      )
+      .unique();
+    const workspace = await ctx.db.get(args.workspaceId);
+    return {
+      data: {
+        workspace,
+        member: !!member,
+      },
+      isLogout: false,
+    };
   },
 });
