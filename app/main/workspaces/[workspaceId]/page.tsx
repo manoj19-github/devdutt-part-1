@@ -1,4 +1,5 @@
 "use client";
+import { useCurrentMember } from "@/hooks/useCurrentMember";
 import useGetChannels from "@/hooks/useGetChannels";
 import { useGetWorkSpaceById } from "@/hooks/useGetWorkSpace";
 import useIsMounted from "@/hooks/useIsMounted";
@@ -12,8 +13,13 @@ type WorkspaceIdPageProps = {};
 const WorkspaceIdPage: FC<WorkspaceIdPageProps> = (): JSX.Element => {
   const workSpaceId = useWorkspaceId();
   const router = useRouter();
+  const currentMemberResponse = useCurrentMember({ workspaceId: workSpaceId });
   const isMounted = useIsMounted();
   const { data } = useGetWorkSpaceById({ id: workSpaceId });
+  const isAdminOfUser = useMemo(
+    () => currentMemberResponse?.data?.role === "admin",
+    [currentMemberResponse?.data?.role]
+  );
   const getWorkspaceByResponse = useGetWorkSpaceById({ id: workSpaceId });
   const getChannelResponse = useGetChannels({ workspaceId: workSpaceId });
   const [openCreateChannelModal, setOpenCreateChannelModal] =
@@ -23,15 +29,24 @@ const WorkspaceIdPage: FC<WorkspaceIdPageProps> = (): JSX.Element => {
     [getChannelResponse.response?.data]
   );
   useEffect(() => {
-    if (getWorkspaceByResponse.isLoading || getChannelResponse.isLoading)
+    if (
+      getWorkspaceByResponse.isLoading ||
+      currentMemberResponse?.isLoading ||
+      !currentMemberResponse?.data ||
+      getChannelResponse.isLoading
+    )
       return;
     if (channelId)
       return router.push(
         `/main/workspaces/${workSpaceId}/channel/${channelId}`
       );
-    else if (!openCreateChannelModal) setOpenCreateChannelModal(true);
+    else if (!openCreateChannelModal && isAdminOfUser)
+      setOpenCreateChannelModal(true);
   }, [
     channelId,
+    currentMemberResponse?.data,
+    currentMemberResponse?.isLoading,
+    isAdminOfUser,
     getChannelResponse.isLoading,
     getWorkspaceByResponse.isLoading,
     getWorkspaceByResponse.data,
@@ -49,14 +64,19 @@ const WorkspaceIdPage: FC<WorkspaceIdPageProps> = (): JSX.Element => {
     );
   if (!getWorkspaceByResponse.data)
     return (
-      <div className="h-full flex-1 items-center justify-center flex-col gap-y-2">
+      <div className="h-[80vh] flex items-center justify-center flex-col gap-y-2">
         <TriangleAlert className="h-8 w-8  text-muted-foreground" />
         <span className="text-sm text-muted-foreground">
           Workspace Not Found
         </span>
       </div>
     );
-  return <Fragment></Fragment>;
+  return (
+    <div className="h-[80vh] flex items-center justify-center flex-col gap-y-2">
+      <TriangleAlert className="h-8 w-8  text-muted-foreground" />
+      <span className="text-sm text-muted-foreground">No Channel found</span>
+    </div>
+  );
 };
 
 export default WorkspaceIdPage;

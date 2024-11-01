@@ -28,12 +28,15 @@ import { useWorkspaceId } from "@/hooks/useWorkspaceId";
 import useAppState from "@/stores/useAppState";
 import toast from "react-hot-toast";
 import useCreateChannel from "@/hooks/useCreateChannel";
+import { useRouter } from "next/navigation";
+import { Id } from "@/convex/_generated/dataModel";
 
 type CrteateChannelModalProps = {};
 const CreateChannelModal: FC<CrteateChannelModalProps> = (): JSX.Element => {
   const isMounted = useIsMounted();
   const appState = useAppState();
   const workspaceId = useWorkspaceId();
+  const router = useRouter();
   const formControl = useForm({
     resolver: zodResolver(ChannelCreateSchema),
     defaultValues: {
@@ -59,9 +62,15 @@ const CreateChannelModal: FC<CrteateChannelModalProps> = (): JSX.Element => {
         onSetteled() {
           appState.setIsLoading(false);
         },
-        onSuccess() {
+        onSuccess(newChannelId: Id<"channels">) {
           toast.success("Channel created successfully");
           setShowModal(false);
+          router.replace(
+            `/main/workspaces/${workspaceId}/channel/${newChannelId}`
+          );
+        },
+        onError(error) {
+          toast.error(error.message ?? "Something went wrong");
         },
       }
     );
