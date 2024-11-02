@@ -56,13 +56,17 @@ const WorkspaceIdPage: FC<WorkspaceIdPageProps> = (): JSX.Element => {
     workSpaceId,
   ]);
   if (!isMounted) return <></>;
-  if (getChannelResponse.isLoading || getWorkspaceByResponse.isLoading)
+  if (
+    getChannelResponse.isLoading ||
+    getWorkspaceByResponse.isLoading ||
+    currentMemberResponse?.isLoading
+  )
     return (
       <div className="h-full flex-1 items-center justify-center flex-col gap-y-2">
         <Loader className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
-  if (!getWorkspaceByResponse.data)
+  if (!getWorkspaceByResponse.data || !currentMemberResponse?.data)
     return (
       <div className="h-[80vh] flex items-center justify-center flex-col gap-y-2">
         <TriangleAlert className="h-8 w-8  text-muted-foreground" />
