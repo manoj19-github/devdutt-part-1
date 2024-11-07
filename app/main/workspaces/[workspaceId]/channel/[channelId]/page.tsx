@@ -5,6 +5,7 @@ import useIsMounted from "@/hooks/useIsMounted";
 import { Loader, TriangleAlert } from "lucide-react";
 import { FC } from "react";
 import Header from "../_components/Header";
+import ChatInput from "./_components/ChatInput";
 type ChannelIdPageProps = {};
 
 const ChannelIdPage: FC<ChannelIdPageProps> = (): JSX.Element => {
@@ -29,8 +30,9 @@ const ChannelIdPage: FC<ChannelIdPageProps> = (): JSX.Element => {
       </div>
     );
   return (
-    <div>
+    <div className="flex flex-col h-full">
       <Header name={channelResponse.response.data?.name} />
+      <ChatInput />
     </div>
   );
 };
