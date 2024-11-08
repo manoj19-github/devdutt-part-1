@@ -32,7 +32,9 @@ const ChannelIdPage: FC<ChannelIdPageProps> = (): JSX.Element => {
   return (
     <div className="flex flex-col h-full">
       <Header name={channelResponse.response.data?.name} />
-      <ChatInput />
+      <ChatInput
+        placeholder={`Message # ${channelResponse.response.data?.name}`}
+      />
     </div>
   );
 };
