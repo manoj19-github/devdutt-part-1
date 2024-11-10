@@ -15,7 +15,7 @@ const ChatInput: FC<ChatInputProps> = ({ placeholder }): JSX.Element => {
   const chatEditorRef = useRef<Quill | null>(null);
   if (!isMounted) return <></>;
   return (
-    <div className=" fixed bottom-0  bg-white px-2 w-[79.5%] pb-1  pt-3">
+    <div className="   bg-white px-2 w-[79.5%] pb-1  pt-0 ">
       <ChatEditor
         onSubmit={() => {}}
         disabled={false}

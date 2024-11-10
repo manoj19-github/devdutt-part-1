@@ -17,6 +17,7 @@ import { ImageIcon, Smile } from "lucide-react";
 import Hint from "./ui/Hint";
 import { Delta, Op } from "quill/core";
 import { cn } from "@/lib/utils";
+import EmojiPopover from "@/app/main/_components/EmojiPopover";
 
 type EditorValue = {
   image: File | null;
@@ -132,11 +133,21 @@ const ChatEditor: FC<ChatEditorProps> = ({
     if (toolbarElement) toolbarElement.classList.toggle("hidden");
   };
   console.log("isEmpty: ", isEmpty);
+  const onEmojiSelect = (selectedEmoji: any) => {
+    const quill = quillRef.current;
+    if (quill) {
+      quill.insertText(quill.getSelection()?.index || 0, selectedEmoji.native);
+    }
+  };
+
   if (!isMounted) return <></>;
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm  transition-all bg-white">
-        <div ref={ChatContainerRef} className="h-full ql-custom" />
+    <div className="flex flex-col  ">
+      <div className="flex flex-col fixed bottom-2 w-[79%] border   border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm  transition-all bg-white">
+        <div
+          ref={ChatContainerRef}
+          className="h-full ql-custom  min-h-[98px] "
+        />
         <div className="flex px-2 pb-2 z-[10] ">
           <Hint
             label={isToolbarVisible ? "Hide formatting" : "Show formatting"}
@@ -150,16 +161,12 @@ const ChatEditor: FC<ChatEditorProps> = ({
               <PiTextAa className="size-5" />
             </Button>
           </Hint>
-          <Hint label="Emoji">
-            <Button
-              onClick={() => {}}
-              disabled={disabled}
-              size="iconSm"
-              variant={"ghost"}
-            >
+          <EmojiPopover onEmojiSelect={onEmojiSelect}>
+            <Button disabled={disabled} size="iconSm" variant={"ghost"}>
               <Smile className="size-5" />
             </Button>
-          </Hint>
+          </EmojiPopover>
+
           {variant === "create" ? (
             <Hint label="Image">
               <Button
@@ -212,10 +219,18 @@ const ChatEditor: FC<ChatEditorProps> = ({
             <></>
           )}
         </div>
-      </div>
-      <div className="p-2 text-[13px] text-muted-foreground flex justify-end">
-        <strong className="pr-[6px] font-bold">Shift + Return</strong> to add a
-        new line
+        {variant === "create" && !isEmpty ? (
+          <div
+            className={
+              " px-2 text-[13px] text-muted-foreground flex justify-end"
+            }
+          >
+            <strong className="pr-[6px] font-bold">Shift + Return</strong> to
+            add a new line
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );
